@@ -1,0 +1,21 @@
+00:00 HVI × ST1 × ST2
+00:22 Cài và nhận diện hai indicator
+00:47 ST1 chậm hơn • ST2 nhanh hơn
+01:12 Nhãn HVI được tạo thế nào?
+01:35 Nhãn ST2 có bộ lọc
+01:59 Ảnh 1 • Mẫu Sell cơ bản
+02:22 Ảnh 2 • Mẫu Buy cơ bản
+02:43 Entry nằm ở đâu?
+03:05 Ảnh 3.1 • ST1 vẫn Buy
+03:27 Ảnh 3.2 • Vùng Fibonacci
+03:52 Ảnh 3.3 • Nến đã chạm ST1
+04:13 Ảnh 3.4 • Hai ST đang Sell
+04:37 Ảnh 4.1 • Chờ Sell xuất hiện sau
+05:00 Ảnh 4.2 • Giá đã chạy qua entry
+05:23 Ảnh 5.1 • Buy đồng hướng
+05:46 Ảnh 5.2 • Vùng Buy còn giữ
+06:09 Ảnh 5.3 • ST1 Sell đi ngang
+06:33 Ảnh 5.4 • Hai ST đang Buy
+06:56 Quan sát tín hiệu khi nến đóng
+07:22 Bảng kiểm trước mỗi quyết định
+07:48 Từ ảnh mẫu đến quy tắc rõ ràng

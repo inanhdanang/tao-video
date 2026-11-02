@@ -1,0 +1,1 @@
+Ảnh hai là trường hợp ngược lại. H V I báo mua trước, rồi S T hai xác nhận mua sau. Đây là trình tự cơ bản để xét lệnh mua. Không nên dùng một tín hiệu xuất hiện về sau để giải thích rằng đã biết trước tại thời điểm vào lệnh. Hãy quan sát theo từng nến, chỉ dùng thông tin đã hình thành tại thời điểm đang xét.

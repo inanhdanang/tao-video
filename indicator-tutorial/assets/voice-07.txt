@@ -1,0 +1,1 @@
+Trong mã, nội dung cảnh báo S T hai ghi giá vào lệnh bằng giá đóng cửa của nến có tín hiệu. Đây là giá tham chiếu của cảnh báo, không bảo đảm giá khớp thực tế. Cách chờ giá hồi, quyết định đổi hướng, và lựa chọn dừng lỗ trong ảnh là quy tắc đọc biểu đồ của bạn. Hai indicator này không tự động đặt lệnh theo toàn bộ các quy tắc đó.

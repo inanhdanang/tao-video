@@ -1,0 +1,1 @@
+Tình huống bốn của ảnh ba: H V I báo mua nhưng cả S T một và S T hai vẫn đang bán. Theo cách đọc của bạn, hướng ưu tiên vẫn là bán. Cần phân biệt một nhãn báo cơ hội với trạng thái xu hướng đang duy trì. Nếu bạn muốn giao dịch ngược nhãn H V I, hãy xem đó là một bộ quy tắc riêng cần kiểm thử, thay vì cho rằng indicator tự động đảo tín hiệu.

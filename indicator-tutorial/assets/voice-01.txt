@@ -1,0 +1,1 @@
+Trên TradingView, mở Pine Editor, dán nội dung từng file, lưu và thêm vào biểu đồ. File x Supertrend hiển thị S T một, S T hai trên vùng giá và Q Q E ở ô riêng. File H V I R S I kết hợp cột khối lượng và histogram R S I. Trước khi so sánh ảnh, hãy kiểm tra đúng mã giao dịch, đúng khung thời gian và cùng bộ thông số.

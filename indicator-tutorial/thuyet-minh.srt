@@ -1,0 +1,375 @@
+1
+00:00:00,800 --> 00:00:01,385
+Chào bạn.
+
+2
+00:00:01,385 --> 00:00:09,375
+Video này hướng dẫn cách đọc bộ chỉ báo H V I, S T một và S T hai, dựa trên hai file indicator và năm ảnh mẫu bạn cung cấp.
+
+3
+00:00:09,375 --> 00:00:15,416
+Chúng ta sẽ đi từ tín hiệu mua bán cơ bản, đến các trường hợp cần đổi hướng hoặc chờ giá hồi.
+
+4
+00:00:15,416 --> 00:00:21,587
+Các biểu đồ trong video là sơ đồ minh họa, không phải dữ liệu thị trường hay kết quả kiểm thử..
+
+5
+00:00:23,787 --> 00:00:29,572
+Trên TradingView, mở Pine Editor, dán nội dung từng file, lưu và thêm vào biểu đồ.
+
+6
+00:00:29,572 --> 00:00:35,005
+File x Supertrend hiển thị S T một, S T hai trên vùng giá và Q Q E ở ô riêng.
+
+7
+00:00:35,005 --> 00:00:39,167
+File H V I R S I kết hợp cột khối lượng và histogram R S I.
+
+8
+00:00:39,167 --> 00:00:46,011
+Trước khi so sánh ảnh, hãy kiểm tra đúng mã giao dịch, đúng khung thời gian và cùng bộ thông số..
+
+9
+00:00:48,211 --> 00:00:52,378
+Trong mã hiện tại, S T một có chu kỳ A T R mười và hệ số sáu.
+
+10
+00:00:52,378 --> 00:00:57,365
+S T hai có cùng chu kỳ nhưng hệ số bốn, vì thế thường phản ứng nhanh hơn.
+
+11
+00:00:57,365 --> 00:00:59,962
+Đường xanh dương và cam thuộc S T một.
+
+12
+00:00:59,962 --> 00:01:02,216
+Vùng xanh lá và đỏ thuộc S T hai.
+
+13
+00:01:02,216 --> 00:01:05,154
+Nhãn mua bán của S T một mặc định đang tắt.
+
+14
+00:01:05,154 --> 00:01:10,619
+Muốn xem nhãn này, hãy bật mục Show Buy Sell Signals trong nhóm Supertrend một..
+
+15
+00:01:12,819 --> 00:01:15,984
+Tín hiệu H V I không chỉ dựa vào một cột màu.
+
+16
+00:01:15,984 --> 00:01:23,511
+Nhãn mua cần cột H V I trước là đỏ, cột hiện tại là xám, đồng thời R S I và Q Q E đều xanh trên cả hai nến.
+
+17
+00:01:23,511 --> 00:01:28,646
+Nhãn bán dùng chuyển tiếp từ cột cam sang xám, với R S I và Q Q E đều đỏ.
+
+18
+00:01:28,646 --> 00:01:33,711
+Lưu ý, biến xanh của H V I trong mã được vẽ bằng màu cam trên màn hình..
+
+19
+00:01:35,911 --> 00:01:38,812
+Nhãn S T hai cuối cùng đã qua hai tầng lọc.
+
+20
+00:01:38,812 --> 00:01:45,827
+Tầng một yêu cầu Q Q E và H V I cùng hướng; nếu chưa đủ điều kiện, mặc định kiểm tra thêm tối đa ba nến.
+
+21
+00:01:45,827 --> 00:01:49,200
+Tầng hai kiểm tra R S I, cũng có cửa sổ chờ riêng.
+
+22
+00:01:49,200 --> 00:01:53,113
+Bộ lọc đảo màu R S I mặc định giới hạn năm cột đầu chu kỳ.
+
+23
+00:01:53,113 --> 00:01:58,105
+Vì vậy, thời điểm đường đổi hướng và lúc nhãn xuất hiện có thể khác nhau..
+
+24
+00:02:00,305 --> 00:02:03,451
+Ở ảnh một, đọc từ trái sang phải theo thời gian.
+
+25
+00:02:03,451 --> 00:02:05,811
+Trước tiên H V I xuất hiện nhãn bán.
+
+26
+00:02:05,811 --> 00:02:11,907
+Sau đó, S T hai xuất hiện nhãn bán, lúc này mới xét điểm vào bán theo cách giao dịch của bạn.
+
+27
+00:02:11,907 --> 00:02:16,888
+Nếu chỉ có H V I, hoặc tín hiệu sau không cùng hướng, hãy bỏ qua mẫu cơ bản.
+
+28
+00:02:16,888 --> 00:02:21,149
+Phần tiếp theo sẽ bổ sung kiểm tra S T một trước khi quyết định..
+
+29
+00:02:23,349 --> 00:02:25,255
+Ảnh hai là trường hợp ngược lại.
+
+30
+00:02:25,255 --> 00:02:28,232
+H V I báo mua trước, rồi S T hai xác nhận mua sau.
+
+31
+00:02:28,232 --> 00:02:30,554
+Đây là trình tự cơ bản để xét lệnh mua.
+
+32
+00:02:30,554 --> 00:02:36,568
+Không nên dùng một tín hiệu xuất hiện về sau để giải thích rằng đã biết trước tại thời điểm vào lệnh.
+
+33
+00:02:36,568 --> 00:02:41,630
+Hãy quan sát theo từng nến, chỉ dùng thông tin đã hình thành tại thời điểm đang xét..
+
+34
+00:02:43,830 --> 00:02:49,328
+Trong mã, nội dung cảnh báo S T hai ghi giá vào lệnh bằng giá đóng cửa của nến có tín hiệu.
+
+35
+00:02:49,328 --> 00:02:53,376
+Đây là giá tham chiếu của cảnh báo, không bảo đảm giá khớp thực tế.
+
+36
+00:02:53,376 --> 00:02:59,478
+Cách chờ giá hồi, quyết định đổi hướng, và lựa chọn dừng lỗ trong ảnh là quy tắc đọc biểu đồ của bạn.
+
+37
+00:02:59,478 --> 00:03:03,707
+Hai indicator này không tự động đặt lệnh theo toàn bộ các quy tắc đó..
+
+38
+00:03:05,907 --> 00:03:11,402
+Ở tình huống một của ảnh ba, H V I báo bán, S T hai cũng bán nhưng S T một vẫn đang mua.
+
+39
+00:03:11,402 --> 00:03:14,836
+Theo cách đọc bạn mô tả, hướng ưu tiên chuyển sang mua.
+
+40
+00:03:14,836 --> 00:03:19,769
+Điểm quan trọng là tín hiệu ngắn hạn đang đối nghịch với vùng xu hướng S T một.
+
+41
+00:03:19,769 --> 00:03:26,138
+Đây là một quy tắc diễn giải của bạn, không phải nhãn đảo chiều mua được hai file mã tự động sinh ra..
+
+42
+00:03:28,338 --> 00:03:34,810
+Tình huống hai của ảnh ba liên quan đến hai mốc Fibonacci, không phẩy sáu một tám và không phẩy bảy tám sáu.
+
+43
+00:03:34,810 --> 00:03:41,161
+Theo xác nhận của bạn, giá hồi vào vùng giữa hai mốc này rồi bị từ chối, nên ưu tiên bán dù H V I báo mua.
+
+44
+00:03:41,161 --> 00:03:45,476
+Hai mốc tạo thành một vùng theo dõi, không phải hai lệnh vào riêng biệt.
+
+45
+00:03:45,476 --> 00:03:51,588
+Cách chọn hai điểm kéo Fibonacci và tiêu chí xác nhận từ chối vùng cần được thống nhất khi thực hành..
+
+46
+00:03:53,788 --> 00:04:01,815
+Ở tình huống ba, bối cảnh ban đầu gần giống tình huống một, nhưng có một khác biệt quan trọng: nến đã chạm đường S T một phía mua.
+
+47
+00:04:01,815 --> 00:04:04,717
+Theo mẫu bạn mô tả, vẫn tiếp tục xét hướng bán.
+
+48
+00:04:04,717 --> 00:04:06,817
+Hãy đánh dấu rõ vị trí chạm đường.
+
+49
+00:04:06,817 --> 00:04:12,312
+Không nên rút gọn rằng chỉ cần S T một đang mua thì mọi nhãn bán đều phải đổi thành mua..
+
+50
+00:04:14,512 --> 00:04:19,830
+Tình huống bốn của ảnh ba: H V I báo mua nhưng cả S T một và S T hai vẫn đang bán.
+
+51
+00:04:19,830 --> 00:04:22,942
+Theo cách đọc của bạn, hướng ưu tiên vẫn là bán.
+
+52
+00:04:22,942 --> 00:04:27,547
+Cần phân biệt một nhãn báo cơ hội với trạng thái xu hướng đang duy trì.
+
+53
+00:04:27,547 --> 00:04:36,561
+Nếu bạn muốn giao dịch ngược nhãn H V I, hãy xem đó là một bộ quy tắc riêng cần kiểm thử, thay vì cho rằng indicator tự động đảo tín hiệu..
+
+54
+00:04:38,761 --> 00:04:41,077
+Ảnh bốn nhấn mạnh thời điểm vào lệnh.
+
+55
+00:04:41,077 --> 00:04:47,461
+Khi S T một và S T hai cùng xuất hiện bán, bạn không vào ngay mà chờ tín hiệu bán tiếp theo ở S T hai.
+
+56
+00:04:47,461 --> 00:04:52,906
+Sau đó, nếu giá hồi về mức giá của cây nến tín hiệu, bạn xét bán theo quy tắc đã mô tả.
+
+57
+00:04:52,906 --> 00:04:59,228
+Hãy tách ba thời điểm: hình thành bối cảnh, xuất hiện tín hiệu sau, rồi giá quay lại mức tham chiếu..
+
+58
+00:05:01,428 --> 00:05:06,469
+Nếu giá đã chạy qua mức xuất hiện tín hiệu bán, theo mô tả của bạn có hai cách chờ.
+
+59
+00:05:06,469 --> 00:05:08,716
+Một là đợi thêm một tín hiệu bán mới.
+
+60
+00:05:08,716 --> 00:05:12,967
+Hai là đợi giá hồi về đường biên S T một phía mua trước đó để xét bán.
+
+61
+00:05:12,967 --> 00:05:19,405
+Đường biên trước đó là mốc lịch sử, không nhất thiết trùng với đường S T một đang cập nhật ở nến hiện tại.
+
+62
+00:05:19,405 --> 00:05:21,895
+Đánh dấu mốc trước khi theo dõi lần hồi..
+
+63
+00:05:24,095 --> 00:05:29,039
+Ở tình huống một của ảnh năm, H V I báo mua, S T hai mua, và S T một vẫn mua.
+
+64
+00:05:29,039 --> 00:05:31,800
+Theo cách đọc bạn đưa ra, tiếp tục xét mua.
+
+65
+00:05:31,800 --> 00:05:36,487
+Tuy nhiên, chính bạn cũng lưu ý có lúc giá chạm dừng lỗ rồi mới tăng lại.
+
+66
+00:05:36,487 --> 00:05:40,918
+Do đó, đồng thuận tín hiệu không đồng nghĩa với lệnh chắc chắn thắng.
+
+67
+00:05:40,918 --> 00:05:45,027
+Cần tách chất lượng tín hiệu khỏi cách đặt điểm vào và dừng lỗ..
+
+68
+00:05:47,227 --> 00:05:54,590
+Tình huống hai của ảnh năm: H V I báo bán nhưng giá vẫn di chuyển trong vùng mua của S T một trước đó và chưa phá xuống.
+
+69
+00:05:54,590 --> 00:05:57,474
+Theo mô tả của bạn, hướng ưu tiên đổi sang mua.
+
+70
+00:05:57,474 --> 00:06:01,033
+Vùng mua đang được giữ là yếu tố quyết định trong mẫu này.
+
+71
+00:06:01,033 --> 00:06:08,519
+Trước khi dùng thực tế, hãy thống nhất phá vùng được đo bằng râu nến hay giá đóng cửa; hai cách sẽ cho kết quả khác nhau..
+
+72
+00:06:10,719 --> 00:06:14,557
+Tình huống ba: H V I mua, S T hai mua nhưng S T một vẫn bán.
+
+73
+00:06:14,557 --> 00:06:20,057
+Khác biệt ở đây là đường S T một phía bán đang nằm ngang, trong khi giá tiếp tục tăng.
+
+74
+00:06:20,057 --> 00:06:22,680
+Theo mẫu bạn mô tả, vẫn tiếp tục xét mua.
+
+75
+00:06:22,680 --> 00:06:29,460
+Trường hợp này cho thấy bạn không chỉ đọc chữ mua hoặc bán, mà còn đọc hình dạng đường và chuyển động giá.
+
+76
+00:06:29,460 --> 00:06:32,210
+Indicator chưa tự định lượng ngoại lệ này..
+
+77
+00:06:34,410 --> 00:06:39,461
+Tình huống bốn của ảnh năm: H V I báo bán nhưng cả S T một và S T hai đang mua.
+
+78
+00:06:39,461 --> 00:06:42,658
+Theo cách đọc của bạn, hướng ưu tiên đổi sang mua.
+
+79
+00:06:42,658 --> 00:06:47,325
+Hãy so sánh với tình huống bốn ở ảnh ba để ghi nhớ hai bối cảnh đối xứng.
+
+80
+00:06:47,325 --> 00:06:54,678
+Tuy vậy, không tự suy rộng rằng mọi ngoại lệ trong xu hướng tăng đều có thể đảo ngược nguyên xi cho xu hướng giảm..
+
+81
+00:06:56,878 --> 00:07:01,193
+Hai file được gửi là indicator, không phải chiến lược kiểm thử tự động.
+
+82
+00:07:01,193 --> 00:07:06,906
+Các điều kiện tạo nhãn chính không có chốt xác nhận nến đóng bằng biến bar state is confirmed.
+
+83
+00:07:06,906 --> 00:07:12,558
+Vì vậy, khi thực hành nên đối chiếu sau khi nến đóng để giảm việc đọc tín hiệu đang thay đổi.
+
+84
+00:07:12,558 --> 00:07:16,995
+Bảng đa khung cũng có thể đổi trạng thái khi nến khung lớn chưa hoàn tất.
+
+85
+00:07:16,995 --> 00:07:21,006
+Đây là điểm cần chú ý khi so sánh lịch sử với quan sát trực tiếp..
+
+86
+00:07:23,206 --> 00:07:26,824
+Trước mỗi quyết định, hãy kiểm tra theo cùng một thứ tự.
+
+87
+00:07:26,824 --> 00:07:41,362
+H V I báo gì? S T hai đã có nhãn cùng hướng hay chưa? S T một đang ở trạng thái nào, và giá nằm ở đâu so với vùng biên? Có đang dùng ngoại lệ Fibonacci hoặc chờ hồi không? Cuối cùng, xác định điểm vào, điểm sai và mức rủi ro.
+
+88
+00:07:41,362 --> 00:07:46,919
+Nếu không giải thích được lệnh thuộc tình huống nào, hãy bỏ qua và tiếp tục quan sát..
+
+89
+00:07:49,119 --> 00:07:53,360
+Để luyện tập, dùng chế độ phát lại biểu đồ và dừng ở từng cây nến.
+
+90
+00:07:53,360 --> 00:07:59,272
+Ghi lại tín hiệu H V I, nhãn S T hai, trạng thái S T một, vùng giá và lý do vào hoặc bỏ qua.
+
+91
+00:07:59,272 --> 00:08:01,521
+Sau đó mới xem diễn biến tiếp theo.
+
+92
+00:08:01,521 --> 00:08:08,526
+Năm ảnh giúp giải thích cách đọc của bạn, nhưng chưa thay thế một bộ quy tắc hoàn chỉnh hay kết quả kiểm thử.
+
+93
+00:08:08,526 --> 00:08:11,996
+Hãy làm rõ từng ngoại lệ rồi mới tính đến tự động hóa.
+
+94
+00:08:11,996 --> 00:08:13,538
+Cảm ơn bạn đã theo dõi..

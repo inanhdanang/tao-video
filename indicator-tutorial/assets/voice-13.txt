@@ -1,0 +1,1 @@
+Nếu giá đã chạy qua mức xuất hiện tín hiệu bán, theo mô tả của bạn có hai cách chờ. Một là đợi thêm một tín hiệu bán mới. Hai là đợi giá hồi về đường biên S T một phía mua trước đó để xét bán. Đường biên trước đó là mốc lịch sử, không nhất thiết trùng với đường S T một đang cập nhật ở nến hiện tại. Đánh dấu mốc trước khi theo dõi lần hồi.

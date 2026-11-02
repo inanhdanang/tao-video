@@ -1,0 +1,1 @@
+Chào bạn. Video này hướng dẫn cách đọc bộ chỉ báo H V I, S T một và S T hai, dựa trên hai file indicator và năm ảnh mẫu bạn cung cấp. Chúng ta sẽ đi từ tín hiệu mua bán cơ bản, đến các trường hợp cần đổi hướng hoặc chờ giá hồi. Các biểu đồ trong video là sơ đồ minh họa, không phải dữ liệu thị trường hay kết quả kiểm thử.

@@ -1,0 +1,1 @@
+Tình huống ba: H V I mua, S T hai mua nhưng S T một vẫn bán. Khác biệt ở đây là đường S T một phía bán đang nằm ngang, trong khi giá tiếp tục tăng. Theo mẫu bạn mô tả, vẫn tiếp tục xét mua. Trường hợp này cho thấy bạn không chỉ đọc chữ mua hoặc bán, mà còn đọc hình dạng đường và chuyển động giá. Indicator chưa tự định lượng ngoại lệ này.

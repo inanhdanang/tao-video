@@ -1,0 +1,1 @@
+Nhãn S T hai cuối cùng đã qua hai tầng lọc. Tầng một yêu cầu Q Q E và H V I cùng hướng; nếu chưa đủ điều kiện, mặc định kiểm tra thêm tối đa ba nến. Tầng hai kiểm tra R S I, cũng có cửa sổ chờ riêng. Bộ lọc đảo màu R S I mặc định giới hạn năm cột đầu chu kỳ. Vì vậy, thời điểm đường đổi hướng và lúc nhãn xuất hiện có thể khác nhau.

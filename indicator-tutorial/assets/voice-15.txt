@@ -1,0 +1,1 @@
+Tình huống hai của ảnh năm: H V I báo bán nhưng giá vẫn di chuyển trong vùng mua của S T một trước đó và chưa phá xuống. Theo mô tả của bạn, hướng ưu tiên đổi sang mua. Vùng mua đang được giữ là yếu tố quyết định trong mẫu này. Trước khi dùng thực tế, hãy thống nhất phá vùng được đo bằng râu nến hay giá đóng cửa; hai cách sẽ cho kết quả khác nhau.

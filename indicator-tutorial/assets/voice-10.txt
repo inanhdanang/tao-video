@@ -1,0 +1,1 @@
+Ở tình huống ba, bối cảnh ban đầu gần giống tình huống một, nhưng có một khác biệt quan trọng: nến đã chạm đường S T một phía mua. Theo mẫu bạn mô tả, vẫn tiếp tục xét hướng bán. Hãy đánh dấu rõ vị trí chạm đường. Không nên rút gọn rằng chỉ cần S T một đang mua thì mọi nhãn bán đều phải đổi thành mua.

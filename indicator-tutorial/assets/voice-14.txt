@@ -1,0 +1,1 @@
+Ở tình huống một của ảnh năm, H V I báo mua, S T hai mua, và S T một vẫn mua. Theo cách đọc bạn đưa ra, tiếp tục xét mua. Tuy nhiên, chính bạn cũng lưu ý có lúc giá chạm dừng lỗ rồi mới tăng lại. Do đó, đồng thuận tín hiệu không đồng nghĩa với lệnh chắc chắn thắng. Cần tách chất lượng tín hiệu khỏi cách đặt điểm vào và dừng lỗ.

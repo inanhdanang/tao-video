@@ -1,0 +1,1 @@
+Ở ảnh một, đọc từ trái sang phải theo thời gian. Trước tiên H V I xuất hiện nhãn bán. Sau đó, S T hai xuất hiện nhãn bán, lúc này mới xét điểm vào bán theo cách giao dịch của bạn. Nếu chỉ có H V I, hoặc tín hiệu sau không cùng hướng, hãy bỏ qua mẫu cơ bản. Phần tiếp theo sẽ bổ sung kiểm tra S T một trước khi quyết định.

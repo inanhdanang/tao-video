@@ -1,0 +1,1 @@
+Tình huống bốn của ảnh năm: H V I báo bán nhưng cả S T một và S T hai đang mua. Theo cách đọc của bạn, hướng ưu tiên đổi sang mua. Hãy so sánh với tình huống bốn ở ảnh ba để ghi nhớ hai bối cảnh đối xứng. Tuy vậy, không tự suy rộng rằng mọi ngoại lệ trong xu hướng tăng đều có thể đảo ngược nguyên xi cho xu hướng giảm.

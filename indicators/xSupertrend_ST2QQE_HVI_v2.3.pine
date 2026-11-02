@@ -1,0 +1,484 @@
+//@version=6
+// ============================================================================
+// Supertrend x2 + QQE MOD + HVI LB
+// ============================================================================
+indicator(title="Supertrend x2 + QQE MOD + HVI v2.3", shorttitle="ST2+QQE+HVI+RSI", overlay=false, precision=2, max_lines_count=1)
+
+// ==================== SUPERTREND 1 (mặc định: ATR 10, Mult 6) ====================
+st1_periods      = input.int(10, "ATR Period", minval=1, group="Supertrend 1")
+st1_src          = input.source(hl2, "Source", group="Supertrend 1")
+st1_mult         = input.float(6.0, "ATR Multiplier", step=0.1, group="Supertrend 1")
+st1_changeATR    = input.bool(true, "Change ATR Calculation Method ?", group="Supertrend 1")
+st1_showsignals  = input.bool(false, "Show Buy/Sell Signals ?", group="Supertrend 1")
+st1_highlighting = input.bool(false, "Highlighter On/Off ?", group="Supertrend 1")
+st1_upColor      = input.color(color.blue, "Up Trend Color", group="Supertrend 1")
+st1_dnColor      = input.color(color.orange, "Down Trend Color", group="Supertrend 1")
+
+st1_atr2 = ta.sma(ta.tr, st1_periods)
+st1_atr  = st1_changeATR ? ta.atr(st1_periods) : st1_atr2
+st1_up   = st1_src - (st1_mult * st1_atr)
+st1_up1  = nz(st1_up[1], st1_up)
+st1_up  := close[1] > st1_up1 ? math.max(st1_up, st1_up1) : st1_up
+st1_dn   = st1_src + (st1_mult * st1_atr)
+st1_dn1  = nz(st1_dn[1], st1_dn)
+st1_dn  := close[1] < st1_dn1 ? math.min(st1_dn, st1_dn1) : st1_dn
+
+var int st1_trend = 1
+st1_trend := nz(st1_trend[1], st1_trend)
+st1_trend := st1_trend == -1 and close > st1_dn1 ? 1 : st1_trend == 1 and close < st1_up1 ? -1 : st1_trend
+
+st1_upPlot = plot(st1_trend == 1 ? st1_up : na, title="ST1 Up Trend", style=plot.style_linebr, linewidth=2, color=st1_upColor, force_overlay=true)
+st1_buySignal = st1_trend == 1 and st1_trend[1] == -1
+plotshape(st1_buySignal ? st1_up : na, title="ST1 UpTrend Begins", location=location.absolute, style=shape.circle, size=size.tiny, color=st1_upColor, force_overlay=true)
+plotshape(st1_buySignal and st1_showsignals ? st1_up : na, title="ST1 Buy", text="Buy", location=location.absolute, style=shape.labelup, size=size.tiny, color=st1_upColor, textcolor=color.white, force_overlay=true)
+
+st1_dnPlot = plot(st1_trend == 1 ? na : st1_dn, title="ST1 Down Trend", style=plot.style_linebr, linewidth=2, color=st1_dnColor, force_overlay=true)
+st1_sellSignal = st1_trend == -1 and st1_trend[1] == 1
+plotshape(st1_sellSignal ? st1_dn : na, title="ST1 DownTrend Begins", location=location.absolute, style=shape.circle, size=size.tiny, color=st1_dnColor, force_overlay=true)
+plotshape(st1_sellSignal and st1_showsignals ? st1_dn : na, title="ST1 Sell", text="Sell", location=location.absolute, style=shape.labeldown, size=size.tiny, color=st1_dnColor, textcolor=color.white, force_overlay=true)
+
+st1_mPlot = plot(ohlc4, title="ST1 mid", style=plot.style_circles, linewidth=1, force_overlay=true, display=display.none)
+st1_longFillColor  = st1_highlighting ? (st1_trend == 1  ? color.new(st1_upColor, 85) : color.new(color.white, 100)) : color.new(color.white, 100)
+st1_shortFillColor = st1_highlighting ? (st1_trend == -1 ? color.new(st1_dnColor, 85) : color.new(color.white, 100)) : color.new(color.white, 100)
+fill(st1_mPlot, st1_upPlot, title="ST1 UpTrend Highlighter", color=st1_longFillColor)
+fill(st1_mPlot, st1_dnPlot, title="ST1 DownTrend Highlighter", color=st1_shortFillColor)
+
+alertcondition(st1_buySignal, title="ST1 Buy", message="⏫ Buy ST1\nGiá vào lệnh (entry): {{close}}")
+alertcondition(st1_sellSignal, title="ST1 Sell", message="🔻 Sell ST1\nGiá vào lệnh (entry): {{close}}")
+
+// ==================== SUPERTREND 2 (mặc định: ATR 10, Mult 2) ====================
+st2_periods      = input.int(10, "ATR Period", minval=1, group="Supertrend 2")
+st2_src          = input.source(hl2, "Source", group="Supertrend 2")
+st2_mult         = input.float(4.0, "ATR Multiplier", step=0.1, group="Supertrend 2")
+st2_changeATR    = input.bool(true, "Change ATR Calculation Method ?", group="Supertrend 2")
+st2_showsignals  = input.bool(true, "Show Buy/Sell Signals ?", group="Supertrend 2")
+st2_highlighting = input.bool(true, "Highlighter On/Off ?", group="Supertrend 2")
+st2_upColor      = input.color(color.green, "Up Trend Color", group="Supertrend 2")
+st2_dnColor      = input.color(color.red, "Down Trend Color", group="Supertrend 2")
+
+st2_atr2 = ta.sma(ta.tr, st2_periods)
+st2_atr  = st2_changeATR ? ta.atr(st2_periods) : st2_atr2
+st2_up   = st2_src - (st2_mult * st2_atr)
+st2_up1  = nz(st2_up[1], st2_up)
+st2_up  := close[1] > st2_up1 ? math.max(st2_up, st2_up1) : st2_up
+st2_dn   = st2_src + (st2_mult * st2_atr)
+st2_dn1  = nz(st2_dn[1], st2_dn)
+st2_dn  := close[1] < st2_dn1 ? math.min(st2_dn, st2_dn1) : st2_dn
+
+var int st2_trend = 1
+st2_trend := nz(st2_trend[1], st2_trend)
+st2_trend := st2_trend == -1 and close > st2_dn1 ? 1 : st2_trend == 1 and close < st2_up1 ? -1 : st2_trend
+
+st2_upPlot = plot(st2_trend == 1 ? st2_up : na, title="ST2 Up Trend", style=plot.style_linebr, linewidth=1, color=st2_upColor, force_overlay=true)
+st2_buySignal = st2_trend == 1 and st2_trend[1] == -1
+plotshape(st2_buySignal ? st2_up : na, title="ST2 UpTrend Begins", location=location.absolute, style=shape.circle, size=size.tiny, color=st2_upColor, force_overlay=true, display=display.none)
+
+st2_dnPlot = plot(st2_trend == 1 ? na : st2_dn, title="ST2 Down Trend", style=plot.style_linebr, linewidth=1, color=st2_dnColor, force_overlay=true)
+st2_sellSignal = st2_trend == -1 and st2_trend[1] == 1
+plotshape(st2_sellSignal ? st2_dn : na, title="ST2 DownTrend Begins", location=location.absolute, style=shape.circle, size=size.tiny, color=st2_dnColor, force_overlay=true, display=display.none)
+
+st2_mPlot = plot(ohlc4, title="ST2 mid", style=plot.style_circles, linewidth=1, force_overlay=true, display=display.none)
+st2_longFillColor  = st2_highlighting ? (st2_trend == 1  ? color.new(st2_upColor, 85) : color.new(color.white, 100)) : color.new(color.white, 100)
+st2_shortFillColor = st2_highlighting ? (st2_trend == -1 ? color.new(st2_dnColor, 85) : color.new(color.white, 100)) : color.new(color.white, 100)
+fill(st2_mPlot, st2_upPlot, title="ST2 UpTrend Highlighter", color=st2_longFillColor)
+fill(st2_mPlot, st2_dnPlot, title="ST2 DownTrend Highlighter", color=st2_shortFillColor)
+
+// (alertcondition cho ST2 Buy/Sell được đặt ở cuối script, sau khi áp dụng bộ lọc QQE MOD + HVI_LB)
+
+// ==================== QQE MOD (pane riêng, bên dưới giá) — thay thế RSI Histogram ====================
+qqe_group_primary   = "QQE MOD - Primary"
+qqe_group_secondary = "QQE MOD - Secondary"
+qqe_group_bollinger = "QQE MOD - Bollinger Bands"
+
+qqe_rsiLengthPrimary    = input.int(6, "RSI Length", group=qqe_group_primary)
+qqe_rsiSmoothingPrimary = input.int(5, "RSI Smoothing", group=qqe_group_primary)
+qqe_factorPrimary       = input.float(3.0, "QQE Factor", group=qqe_group_primary)
+qqe_thresholdPrimary    = input.float(3.0, "Threshold", group=qqe_group_primary)
+qqe_sourcePrimary       = input.source(close, "RSI Source", group=qqe_group_primary)
+
+qqe_rsiLengthSecondary    = input.int(6, "RSI Length", group=qqe_group_secondary)
+qqe_rsiSmoothingSecondary = input.int(5, "RSI Smoothing", group=qqe_group_secondary)
+qqe_factorSecondary       = input.float(1.61, "QQE Factor", group=qqe_group_secondary)
+qqe_thresholdSecondary    = input.float(3.0, "Threshold", group=qqe_group_secondary)
+qqe_sourceSecondary       = input.source(close, "RSI Source", group=qqe_group_secondary)
+
+qqe_bollingerLength     = input.int(50, "Length", minval=1, group=qqe_group_bollinger, tooltip="The length of the Bollinger Bands calculation.")
+qqe_bollingerMultiplier = input.float(0.35, "Multiplier", step=0.1, minval=0.001, maxval=5, group=qqe_group_bollinger, tooltip="The multiplier used to calculate Bollinger Band width.")
+
+calculateQQE(rsiLength, smoothingFactor, qqeFactor, source) =>
+    wildersLength = rsiLength * 2 - 1
+    rsi = ta.rsi(source, rsiLength)
+    smoothedRsi = ta.ema(rsi, smoothingFactor)
+    atrRsi = math.abs(smoothedRsi[1] - smoothedRsi)
+    smoothedAtrRsi = ta.ema(atrRsi, wildersLength)
+    dynamicAtrRsi = smoothedAtrRsi * qqeFactor
+
+    longBand = 0.0
+    shortBand = 0.0
+    trendDirection = 0
+
+    atrDelta = dynamicAtrRsi
+    newShortBand = smoothedRsi + atrDelta
+    newLongBand = smoothedRsi - atrDelta
+    longBand := smoothedRsi[1] > longBand[1] and smoothedRsi > longBand[1] ? math.max(longBand[1], newLongBand) : newLongBand
+    shortBand := smoothedRsi[1] < shortBand[1] and smoothedRsi < shortBand[1] ? math.min(shortBand[1], newShortBand) : newShortBand
+    longBandCross = ta.cross(longBand[1], smoothedRsi)
+
+    if ta.cross(smoothedRsi, shortBand[1])
+        trendDirection := 1
+    else if longBandCross
+        trendDirection := -1
+    else
+        trendDirection := trendDirection[1]
+
+    qqeTrendLine = trendDirection == 1 ? longBand : shortBand
+    [qqeTrendLine, smoothedRsi]
+
+[qqe_primaryTrendLine, qqe_primaryRSI]     = calculateQQE(qqe_rsiLengthPrimary, qqe_rsiSmoothingPrimary, qqe_factorPrimary, qqe_sourcePrimary)
+[qqe_secondaryTrendLine, qqe_secondaryRSI] = calculateQQE(qqe_rsiLengthSecondary, qqe_rsiSmoothingSecondary, qqe_factorSecondary, qqe_sourceSecondary)
+
+qqe_bollingerBasis      = ta.sma(qqe_primaryTrendLine - 50, qqe_bollingerLength)
+qqe_bollingerDeviation  = qqe_bollingerMultiplier * ta.stdev(qqe_primaryTrendLine - 50, qqe_bollingerLength)
+qqe_bollingerUpper      = qqe_bollingerBasis + qqe_bollingerDeviation
+qqe_bollingerLower      = qqe_bollingerBasis - qqe_bollingerDeviation
+
+qqe_colorPrimary   = qqe_primaryRSI - 50 > qqe_bollingerUpper ? color.new(#00c3ff, 0) : qqe_primaryRSI - 50 < qqe_bollingerLower ? color.new(#ff0062, 0) : color.new(#707070, 20)
+qqe_colorSecondary = qqe_secondaryRSI - 50 > qqe_thresholdSecondary ? color.new(#707070, 20) : qqe_secondaryRSI - 50 < -qqe_thresholdSecondary ? color.new(#707070, 20) : na
+
+// Điều kiện xanh/đỏ dùng cho tổ hợp ⭐ (giống vùng "QQE Up/Down Signal" của QQE MOD gốc):
+//   xanh = QQE phụ vượt ngưỡng dương ĐỒNG THỜI QQE chính phá dải Bollinger trên
+//   đỏ   = QQE phụ vượt ngưỡng âm  ĐỒNG THỜI QQE chính phá dải Bollinger dưới
+qqe_isGreen = qqe_secondaryRSI - 50 > qqe_thresholdSecondary and qqe_primaryRSI - 50 > qqe_bollingerUpper
+qqe_isRed   = qqe_secondaryRSI - 50 < -qqe_thresholdSecondary and qqe_primaryRSI - 50 < qqe_bollingerLower
+
+plot(qqe_secondaryTrendLine - 50, title="QQE Secondary Trend Line", color=color.white, linewidth=2)
+plot(qqe_secondaryRSI - 50, title="QQE Secondary RSI Histogram", color=qqe_colorSecondary, style=plot.style_columns)
+plot(qqe_isGreen ? qqe_secondaryRSI - 50 : na, title="QQE Up Signal", style=plot.style_columns, color=#00c3ff)
+plot(qqe_isRed   ? qqe_secondaryRSI - 50 : na, title="QQE Down Signal", style=plot.style_columns, color=#ff0062)
+hline(0, title="QQE Zero Line", color=color.white, linestyle=hline.style_dotted)
+
+alertcondition(ta.crossover(qqe_primaryRSI, 50), title="QQE Primary RSI Cross Above Zero", message="QQE Primary RSI crossed above zero")
+alertcondition(ta.crossunder(qqe_primaryRSI, 50), title="QQE Primary RSI Cross Below Zero", message="QQE Primary RSI crossed below zero")
+
+// ==================== HVI_LB (Lazy Bear) — nhúng ẩn, không vẽ mặc định ====================
+hvi_length    = input.int(200, "Length", group="HVI_LB (ẩn khỏi chart)")
+hvi_divisor   = input.float(1.5, "Divisor", group="HVI_LB (ẩn khỏi chart)")
+
+hvi_range     = high - low
+hvi_rangeAvg  = ta.sma(hvi_range, hvi_length)
+hvi_volumeA   = ta.sma(volume, hvi_length)
+
+hvi_high1 = high[1]
+hvi_low1  = low[1]
+hvi_mid1  = hl2[1]
+hvi_u1    = hvi_mid1 + (hvi_high1 - hvi_low1) / hvi_divisor
+hvi_d1    = hvi_mid1 - (hvi_high1 - hvi_low1) / hvi_divisor
+
+hvi_r1 = (hvi_range > hvi_rangeAvg) and (close < hvi_d1) and volume > hvi_volumeA
+hvi_r2 = close < hvi_mid1
+hvi_red = hvi_r1 or hvi_r2
+
+hvi_g1 = close > hvi_mid1
+hvi_g2 = (hvi_range > hvi_rangeAvg) and (close > hvi_u1) and (volume > hvi_volumeA)
+hvi_g3 = (high > hvi_high1) and (hvi_range < hvi_rangeAvg / 1.5) and (volume < hvi_volumeA)
+hvi_g4 = (low < hvi_low1) and (hvi_range < hvi_rangeAvg / 1.5) and (volume > hvi_volumeA)
+hvi_green = hvi_g1 or hvi_g2 or hvi_g3 or hvi_g4
+
+hvi_gr1 = (hvi_range > hvi_rangeAvg) and (close > hvi_d1) and (close < hvi_u1) and (volume > hvi_volumeA) and (volume < hvi_volumeA * 1.5) and (volume > volume[1])
+hvi_gr2 = (hvi_range < hvi_rangeAvg / 1.5) and (volume < hvi_volumeA / 1.5)
+hvi_gr3 = (close > hvi_d1) and (close < hvi_u1)
+hvi_gray = hvi_gr1 or hvi_gr2 or hvi_gr3
+
+// Giữ đúng thứ tự ưu tiên màu như bản gốc LazyBear: gray > green > red > blue
+hvi_color   = hvi_gray ? color.gray : hvi_green ? color.green : hvi_red ? color.red : color.blue
+hvi_isGreen = hvi_color == color.green
+hvi_isRed   = hvi_color == color.red
+
+// ==================== RSI HISTOGRAM (dman103) — nhúng ẩn, không vẽ mặc định ====================
+rsihist_group      = "RSI Histogram (ẩn khỏi chart)"
+rsihist_length     = input.int(7, "RSI Length", group=rsihist_group)
+rsihist_maLength   = input.int(4, "Moving Average Length", group=rsihist_group)
+rsihist_source     = input.source(hl2, "Source", group=rsihist_group)
+rsihist_maType     = input.string("KAMA", "Moving Average Type", options=["NONE", "SMA", "EMA", "WMA", "HMA", "JMA", "KAMA"], group=rsihist_group)
+rsihist_kamaAlphaN = input.float(3, "KAMA's alpha (only for KAMA)", minval=0, step=0.5, group=rsihist_group)
+
+f_rsiHistMA(src, length, maType, kamaAlphaN) =>
+    ma = 0.0
+    if maType == "NONE"
+        ma := src
+    if maType == "SMA"
+        ma := ta.sma(src, length)
+    if maType == "EMA"
+        ma := ta.ema(src, length)
+    if maType == "WMA"
+        ma := ta.wma(src, length)
+    if maType == "HMA"
+        ma := ta.hma(src, length)
+    if maType == "JMA"
+        beta  = 0.45 * (length - 1) / (0.45 * (length - 1) + 2)
+        alpha = beta
+        tmp0 = 0.0
+        tmp1 = 0.0
+        tmp2 = 0.0
+        tmp3 = 0.0
+        tmp4 = 0.0
+        tmp0 := (1 - alpha) * src + alpha * nz(tmp0[1])
+        tmp1 := (src - tmp0) * (1 - beta) + beta * nz(tmp1[1])
+        tmp2 := tmp0 + tmp1
+        tmp3 := (tmp2 - nz(tmp4[1])) * ((1 - alpha) * (1 - alpha)) + (alpha * alpha) * nz(tmp3[1])
+        tmp4 := nz(tmp4[1]) + tmp3
+        ma := tmp4
+    if maType == "KAMA"
+        fastAlpha = 2.0 / (kamaAlphaN + 1)
+        slowAlpha = 2.0 / 31
+        momentum = math.abs(ta.change(src, length))
+        volatility = math.sum(math.abs(ta.change(src)), length)
+        efficiencyRatio = volatility != 0 ? momentum / volatility : 0
+        smoothingConstant = math.pow((efficiencyRatio * (fastAlpha - slowAlpha)) + slowAlpha, 2)
+        var kama = 0.0
+        kama := nz(kama[1], src) + smoothingConstant * (src - nz(kama[1], src))
+        ma := kama
+    ma
+
+rsihist_rsiVal = math.min(100, math.max(-100, (ta.rsi(rsihist_source, rsihist_length) - 50) * 4))
+rsihist_val    = f_rsiHistMA(rsihist_rsiVal, rsihist_maLength, rsihist_maType, rsihist_kamaAlphaN)
+rsihist_isGreen = rsihist_val > 0
+rsihist_isRed   = rsihist_val < 0
+// Đếm số nến liên tiếp cùng màu kể từ khi vừa đảo màu: nến đầu tiên ngay sau khi đảo
+// màu được tính là số 1, các nến tiếp theo cùng màu tăng dần; đổi màu thì reset về 0.
+var int rsihist_greenCount = 0
+var int rsihist_redCount   = 0
+rsihist_greenCount := rsihist_isGreen ? (nz(rsihist_greenCount[1]) > 0 ? rsihist_greenCount[1] + 1 : 1) : 0
+rsihist_redCount   := rsihist_isRed   ? (nz(rsihist_redCount[1])   > 0 ? rsihist_redCount[1]   + 1 : 1) : 0
+
+// ==================== ĐÁNH DẤU GIẢM / TĂNG TRÊN QQE MOD (HVI + RSI Histogram) ====================
+// Cơ chế Giảm: ST2 đỏ (giảm) + QQE đỏ (dưới 0) + HVI trắng + RSI Histogram đỏ -> đánh dấu 1 thanh Giảm ở QQE.
+// Cơ chế Tăng: ST2 xanh (tăng) + QQE xanh (trên 0) + HVI trắng + RSI Histogram xanh -> đánh dấu 1 thanh Tăng ở QQE.
+// Chỉ đánh dấu 1 điểm DUY NHẤT gần điểm giao nhất:
+//   - Giảm: tính từ lúc QQE chuyển từ phía trên 0 sang dưới 0 (xanh -> đỏ). Đã có điểm đầu thì bỏ qua các điểm sau.
+//   - Tăng: tính từ lúc QQE chuyển từ phía dưới 0 sang trên 0 (đỏ -> xanh). Đã có điểm đầu thì bỏ qua các điểm sau.
+qqe_pattern_group    = "QQE MOD - Đánh dấu Giảm/Tăng (QQE + HVI + RSI Histogram)"
+qqe_pattern_show     = input.bool(true, "Đánh dấu Giảm/Tăng trên QQE ?", group=qqe_pattern_group)
+qqe_pattern_maxBars  = input.int(10, "Chỉ đánh dấu trong vòng N nến kể từ điểm giao của RSI Histogram", minval=1, group=qqe_pattern_group, tooltip="Đếm theo RSI Histogram: cột đầu tiên sau khi RSI Histogram đảo màu (điểm giao) tính là nến 1. Giảm: đếm từ lúc RSI Histogram chuyển xanh→đỏ. Tăng: đếm từ lúc chuyển đỏ→xanh. Quá N nến thì không đánh dấu.")
+qqe_pattern_dnColor  = input.color(color.new(#8b0000, 0), "Màu thanh đánh dấu Giảm", group=qqe_pattern_group)
+qqe_pattern_upColor  = input.color(color.new(#003b73, 0), "Màu thanh đánh dấu Tăng", group=qqe_pattern_group)
+
+hvi_isWhite = hvi_color == color.gray  // HVI cột trắng/xám nhạt (trung tính)
+
+qqe_secondaryVal = qqe_secondaryRSI - 50
+qqe_hasBar       = math.abs(qqe_secondaryVal) > qqe_thresholdSecondary  // có cột hiển thị (đỏ/xanh/xám)
+qqe_belowZeroBar = qqe_isRed    // chỉ cột ĐỎ (dưới 0), không tính xám
+qqe_aboveZeroBar = qqe_isGreen  // chỉ cột XANH (trên 0), không tính xám
+
+// Phía hiện tại của QQE so với 0 (giữ nguyên phía cũ nếu đúng bằng 0)
+var int qqe_side = 0
+qqe_prevSide = qqe_side
+qqe_side := qqe_secondaryVal > 0 ? 1 : qqe_secondaryVal < 0 ? -1 : qqe_side
+
+// Cờ "đã đánh dấu trong đoạn hiện tại". Khởi tạo = true: chỉ bắt đầu đánh dấu sau 1 lần giao thực sự.
+var bool qqe_downDone = true
+var bool qqe_upDone   = true
+if qqe_side == -1 and qqe_prevSide == 1
+    qqe_downDone := false   // vừa giao từ tăng sang giảm -> cho phép 1 điểm Giảm
+if qqe_side == 1 and qqe_prevSide == -1
+    qqe_upDone := false     // vừa giao từ giảm sang tăng -> cho phép 1 điểm Tăng
+
+qqe_patternDown = rsihist_redCount   >= 1 and rsihist_redCount   <= qqe_pattern_maxBars and not qqe_downDone and st2_trend == -1 and qqe_belowZeroBar and hvi_isWhite and rsihist_isRed
+qqe_patternUp   = rsihist_greenCount >= 1 and rsihist_greenCount <= qqe_pattern_maxBars and not qqe_upDone   and st2_trend == 1  and qqe_aboveZeroBar and hvi_isWhite and rsihist_isGreen
+if qqe_patternDown
+    qqe_downDone := true
+if qqe_patternUp
+    qqe_upDone := true
+
+plotshape(qqe_pattern_show and qqe_patternDown ? qqe_secondaryVal : na, title="QQE Pattern Down Mark", style=shape.square, location=location.absolute, size=size.tiny, color=qqe_pattern_dnColor)
+plotshape(qqe_pattern_show and qqe_patternUp   ? qqe_secondaryVal : na, title="QQE Pattern Up Mark",   style=shape.square, location=location.absolute, size=size.tiny, color=qqe_pattern_upColor)
+
+alertcondition(qqe_patternDown, title="QQE đánh dấu Giảm", message="⚠️ QQE MOD: đánh dấu Giảm (ST2 đỏ + QQE đỏ + HVI trắng + RSI Histogram đỏ)")
+alertcondition(qqe_patternUp,   title="QQE đánh dấu Tăng", message="⚠️ QQE MOD: đánh dấu Tăng (ST2 xanh + QQE xanh + HVI trắng + RSI Histogram xanh)")
+
+// ==================== BỘ LỌC TÍN HIỆU BUY/SELL CỦA SUPERTREND 2 ====================
+// Điều kiện lọc 1: QQE MOD + HVI_LB
+// - Nến tín hiệu Buy có QQE MOD xanh VÀ HVI_LB xanh -> giữ tín hiệu Buy ngay.
+// - Nếu chưa đủ điều kiện, cho phép xem xét thêm tối đa N nến kế tiếp (kiểm tra lại
+//   cả QQE MOD và HVI_LB trên từng nến đó); nếu trong khoảng đó điều kiện được thoả
+//   thì mới giữ tín hiệu, ngược lại tín hiệu bị huỷ.
+// - Tương tự cho Sell với QQE MOD đỏ + HVI_LB đỏ.
+// - Có thể bật/tắt bộ lọc này; khi tắt, tín hiệu Buy/Sell gốc của Supertrend 2 được
+//   giữ nguyên như cũ (không lọc).
+filter1_group   = "Bộ lọc tín hiệu ST2: QQE MOD + HVI_LB"
+filter1_enable  = input.bool(true, "Bật/tắt điều kiện lọc 1 (QQE MOD + HVI_LB) ?", group=filter1_group)
+filter1_maxBars = input.int(3, "Số nến kiểm tra thêm nếu chưa đủ điều kiện", minval=0, maxval=10, group=filter1_group)
+
+filter1_buyOK  = qqe_isGreen and hvi_isGreen
+filter1_sellOK = qqe_isRed   and hvi_isRed
+
+var int st2_buyWait  = -1
+var int st2_sellWait = -1
+
+if st2_buySignal
+    st2_buyWait := 0
+else if st2_buyWait >= 0
+    st2_buyWait := st2_buyWait + 1
+
+if st2_sellSignal
+    st2_sellWait := 0
+else if st2_sellWait >= 0
+    st2_sellWait := st2_sellWait + 1
+
+st2_buyConfirmed  = st2_buyWait  >= 0 and st2_buyWait  <= filter1_maxBars and filter1_buyOK
+st2_sellConfirmed = st2_sellWait >= 0 and st2_sellWait <= filter1_maxBars and filter1_sellOK
+
+// Xác nhận xong hoặc hết hạn chờ mà vẫn không đủ điều kiện -> tắt bộ đếm, huỷ tín hiệu
+if st2_buyConfirmed or st2_buyWait > filter1_maxBars
+    st2_buyWait := -1
+if st2_sellConfirmed or st2_sellWait > filter1_maxBars
+    st2_sellWait := -1
+
+st2_buySignalFinal  = filter1_enable ? st2_buyConfirmed  : st2_buySignal
+st2_sellSignalFinal = filter1_enable ? st2_sellConfirmed : st2_sellSignal
+
+// ==================== Điều kiện lọc 2: RSI Histogram ====================
+// Lấy đầu ra của điều kiện lọc 1 (st2_buySignalFinal/st2_sellSignalFinal) làm đầu vào.
+// - Giữ tín hiệu Buy khi RSI Histogram màu xanh (ngay tại nến, hoặc trong tối đa N
+//   nến kế tiếp nếu chưa đủ điều kiện — giống cách hoạt động của điều kiện lọc 1).
+// - Giữ tín hiệu Sell khi RSI Histogram màu đỏ, tương tự.
+// - Điều kiện phụ riêng biệt (có thể bật/tắt độc lập), đếm theo đúng số cột màu kể
+//   từ khi RSI Histogram vừa đảo màu: cột đầu tiên sau khi đảo màu tính là số 1,
+//   các cột tiếp theo cùng màu tăng dần. Buy: đếm cột XANH kể từ khi vừa đảo từ đỏ
+//   sang xanh — nếu đến cột xanh thứ M (mốc cài đặt) vẫn chưa có tín hiệu Buy thì ẩn
+//   tín hiệu; còn nếu tín hiệu Buy rơi vào cột 1..M thì giữ. Sell: đếm cột ĐỎ kể từ
+//   khi vừa đảo từ xanh sang đỏ, tương tự. Khi tắt điều kiện phụ này, chỉ cần đúng
+//   màu hiện tại (xanh cho Buy / đỏ cho Sell) là đủ.
+filter2_group        = "Bộ lọc tín hiệu ST2: RSI Histogram"
+filter2_enable       = input.bool(true, "Bật/tắt điều kiện lọc 2 (RSI Histogram) ?", group=filter2_group)
+filter2_maxBars      = input.int(3, "Số nến kiểm tra thêm nếu chưa đủ điều kiện", minval=0, maxval=10, group=filter2_group)
+filter2_reverseEnable = input.bool(true, "Bật/tắt điều kiện đảo màu RSI Histogram ?", group=filter2_group)
+filter2_reverseBars  = input.int(5, "Số nến xem xét đảo màu RSI Histogram (Buy: đỏ→xanh, Sell: xanh→đỏ)", minval=1, maxval=10, group=filter2_group)
+
+filter2_buyReverseOK  = rsihist_isGreen and rsihist_greenCount <= filter2_reverseBars
+filter2_sellReverseOK = rsihist_isRed   and rsihist_redCount   <= filter2_reverseBars
+
+filter2_buyOK  = filter2_reverseEnable ? filter2_buyReverseOK  : rsihist_isGreen
+filter2_sellOK = filter2_reverseEnable ? filter2_sellReverseOK : rsihist_isRed
+
+var int st2_buyWait2  = -1
+var int st2_sellWait2 = -1
+
+if st2_buySignalFinal
+    st2_buyWait2 := 0
+else if st2_buyWait2 >= 0
+    st2_buyWait2 := st2_buyWait2 + 1
+
+if st2_sellSignalFinal
+    st2_sellWait2 := 0
+else if st2_sellWait2 >= 0
+    st2_sellWait2 := st2_sellWait2 + 1
+
+st2_buyConfirmed2  = st2_buyWait2  >= 0 and st2_buyWait2  <= filter2_maxBars and filter2_buyOK
+st2_sellConfirmed2 = st2_sellWait2 >= 0 and st2_sellWait2 <= filter2_maxBars and filter2_sellOK
+
+if st2_buyConfirmed2 or st2_buyWait2 > filter2_maxBars
+    st2_buyWait2 := -1
+if st2_sellConfirmed2 or st2_sellWait2 > filter2_maxBars
+    st2_sellWait2 := -1
+
+st2_buySignalFinal2  = filter2_enable ? st2_buyConfirmed2  : st2_buySignalFinal
+st2_sellSignalFinal2 = filter2_enable ? st2_sellConfirmed2 : st2_sellSignalFinal
+
+plotshape(st2_buySignalFinal2 and st2_showsignals ? st2_up : na, title="ST2 Buy", text="Buy", location=location.absolute, style=shape.labelup, size=size.tiny, color=st2_upColor, textcolor=color.white, force_overlay=true)
+plotshape(st2_sellSignalFinal2 and st2_showsignals ? st2_dn : na, title="ST2 Sell", text="Sell", location=location.absolute, style=shape.labeldown, size=size.tiny, color=st2_dnColor, textcolor=color.white, force_overlay=true)
+
+alertcondition(st2_buySignalFinal2, title="🔵 ST2 Buy", message="🔵 Buy ST2\nGiá vào lệnh (entry): {{close}}")
+alertcondition(st2_sellSignalFinal2, title="🔴 ST2 Sell", message="🔴 Sell ST2\nGiá vào lệnh (entry): {{close}}")
+
+// ==================== GHI CHÚ GIAO DỊCH (bảng góc trên bên phải) ====================
+notes_group     = "Ghi chú giao dịch"
+notes_show      = input.bool(false, "Hiển thị bảng ghi chú ?", group=notes_group)
+notes_sizeInput = input.string("small", "Cỡ chữ ghi chú", options=["tiny", "small", "normal", "large"], group=notes_group)
+notes_textSize  = notes_sizeInput == "tiny" ? size.tiny : notes_sizeInput == "small" ? size.small : notes_sizeInput == "large" ? size.large : size.normal
+
+// Mỗi ghi chú xuống dòng thủ công để giữ chiều ngang của bảng ngắn gọn, không che
+// hết chart, đặc biệt trên điện thoại màn hình nhỏ. Nền để trong suốt (không tô
+// màu) để không che các chi tiết khác phía sau (đường ST1/ST2, nến...).
+notes_row0 = "GHI CHÚ GIAO DỊCH"
+notes_row1 = "1. SL>10$: chờ giá hồi về gần biên ST2\n   rồi vào lệnh, SL cách biên ST2 ~2$."
+notes_row2 = "2. TP nên chọn khoảng 10-15$."
+notes_row3 = "3. ST1 đang Sell: không Buy ngắt quãng\n   ST2, chỉ Buy khi gần cuối chu kỳ Sell ST1."
+notes_row4 = "4. ST1 đang Buy: không Sell ngắt quãng\n   ST2, chỉ Sell khi gần cuối chu kỳ Buy ST1."
+notes_row5 = "5. ST1 & ST2 đi ngang dài: canh thoát lệnh\n   hoặc kéo SL về Entry."
+
+var table notesTable = table.new(position.top_right, 1, 6, force_overlay=true)
+if barstate.islast and notes_show
+    table.cell(notesTable, 0, 0, notes_row0, text_halign=text.align_left, text_valign=text.align_top, text_size=notes_textSize, text_color=color.black, bgcolor=na)
+    table.cell(notesTable, 0, 1, notes_row1, text_halign=text.align_left, text_valign=text.align_top, text_size=notes_textSize, text_color=color.black, bgcolor=na)
+    table.cell(notesTable, 0, 2, notes_row2, text_halign=text.align_left, text_valign=text.align_top, text_size=notes_textSize, text_color=color.black, bgcolor=na)
+    table.cell(notesTable, 0, 3, notes_row3, text_halign=text.align_left, text_valign=text.align_top, text_size=notes_textSize, text_color=color.black, bgcolor=na)
+    table.cell(notesTable, 0, 4, notes_row4, text_halign=text.align_left, text_valign=text.align_top, text_size=notes_textSize, text_color=color.black, bgcolor=na)
+    table.cell(notesTable, 0, 5, notes_row5, text_halign=text.align_left, text_valign=text.align_top, text_size=notes_textSize, text_color=color.black, bgcolor=na)
+
+// ==================== BẢNG TÍN HIỆU ĐA KHUNG THỜI GIAN (MTF) ====================
+// Bảng riêng biệt, độc lập với bảng "Ghi chú giao dịch" ở trên. Lấy trạng thái xu
+// hướng hiện tại (Buy = đang tăng / Sell = đang giảm) của Supertrend 1 hoặc
+// Supertrend 2 (chọn 1 trong 2) trên 6 khung thời gian: 1M, 5M, 15M, 1H, 4H, D —
+// dùng request.security() nên TradingView tự lấy đúng dữ liệu của từng khung thời
+// gian tương ứng với mã đang xem trên chart. Có kẻ khung viền quanh bảng; ô Buy/Sell
+// tô nền xanh/đỏ chữ trắng giống nhãn Buy/Sell trên chart, còn hàng tên khung thời
+// gian (1M/5M/...) để nền trong suốt.
+// Lưu ý: giống mọi chỉ báo đa khung khác, giá trị của khung thời gian LỚN HƠN khung
+// hiện tại có thể còn đang "chạy" (repaint) cho tới khi nến đó đóng.
+mtf_group     = "Bảng tín hiệu đa khung (1M/5M/15M/1H/4H/D)"
+mtf_show      = input.bool(true, "Hiển thị bảng đa khung ?", group=mtf_group)
+mtf_source    = input.string("ST2", "Lấy xu hướng theo", options=["ST1", "ST2"], group=mtf_group)
+mtf_posInput  = input.string("Trên phải", "Vị trí bảng", options=["Trên phải", "Dưới phải", "Trên trái", "Dưới trái"], group=mtf_group)
+mtf_sizeInput = input.string("normal", "Cỡ chữ bảng đa khung", options=["tiny", "small", "normal", "large"], group=mtf_group)
+mtf_textSize  = mtf_sizeInput == "tiny" ? size.tiny : mtf_sizeInput == "small" ? size.small : mtf_sizeInput == "large" ? size.large : size.normal
+mtf_position  = mtf_posInput == "Trên phải" ? position.top_right : mtf_posInput == "Dưới phải" ? position.bottom_right : mtf_posInput == "Trên trái" ? position.top_left : position.bottom_left
+
+f_mtfTrend(useST1) =>
+    len    = useST1 ? st1_periods   : st2_periods
+    mult   = useST1 ? st1_mult      : st2_mult
+    chgATR = useST1 ? st1_changeATR : st2_changeATR
+    src    = useST1 ? st1_src       : st2_src
+    atr2 = ta.sma(ta.tr, len)
+    atr  = chgATR ? ta.atr(len) : atr2
+    up   = src - (mult * atr)
+    up1  = nz(up[1], up)
+    up  := close[1] > up1 ? math.max(up, up1) : up
+    dn   = src + (mult * atr)
+    dn1  = nz(dn[1], dn)
+    dn  := close[1] < dn1 ? math.min(dn, dn1) : dn
+    var int trend = 1
+    trend := nz(trend[1], trend)
+    trend := trend == -1 and close > dn1 ? 1 : trend == 1 and close < up1 ? -1 : trend
+    trend
+
+mtf_useST1 = mtf_source == "ST1"
+
+mtf_trend1 = request.security(syminfo.tickerid, "1",   f_mtfTrend(mtf_useST1))
+mtf_trend2 = request.security(syminfo.tickerid, "5",   f_mtfTrend(mtf_useST1))
+mtf_trend3 = request.security(syminfo.tickerid, "15",  f_mtfTrend(mtf_useST1))
+mtf_trend4 = request.security(syminfo.tickerid, "60",  f_mtfTrend(mtf_useST1))
+mtf_trend5 = request.security(syminfo.tickerid, "240", f_mtfTrend(mtf_useST1))
+mtf_trend6 = request.security(syminfo.tickerid, "D",   f_mtfTrend(mtf_useST1))
+
+f_mtfLabel(tr) => tr == 1 ? "Buy" : "Sell"
+f_mtfBgColor(tr) => tr == 1 ? color.green : color.red
+
+var table mtfTable = table.new(mtf_position, 6, 2, border_width=1, border_color=color.gray, frame_width=1, frame_color=color.gray, force_overlay=true)
+if barstate.islast and mtf_show
+    table.cell(mtfTable, 0, 0, "1M",  text_size=mtf_textSize, text_color=color.black, bgcolor=na)
+    table.cell(mtfTable, 1, 0, "5M",  text_size=mtf_textSize, text_color=color.black, bgcolor=na)
+    table.cell(mtfTable, 2, 0, "15M", text_size=mtf_textSize, text_color=color.black, bgcolor=na)
+    table.cell(mtfTable, 3, 0, "1H",  text_size=mtf_textSize, text_color=color.black, bgcolor=na)
+    table.cell(mtfTable, 4, 0, "4H",  text_size=mtf_textSize, text_color=color.black, bgcolor=na)
+    table.cell(mtfTable, 5, 0, "D",   text_size=mtf_textSize, text_color=color.black, bgcolor=na)
+    table.cell(mtfTable, 0, 1, f_mtfLabel(mtf_trend1), text_size=mtf_textSize, text_color=color.white, bgcolor=f_mtfBgColor(mtf_trend1))
+    table.cell(mtfTable, 1, 1, f_mtfLabel(mtf_trend2), text_size=mtf_textSize, text_color=color.white, bgcolor=f_mtfBgColor(mtf_trend2))
+    table.cell(mtfTable, 2, 1, f_mtfLabel(mtf_trend3), text_size=mtf_textSize, text_color=color.white, bgcolor=f_mtfBgColor(mtf_trend3))
+    table.cell(mtfTable, 3, 1, f_mtfLabel(mtf_trend4), text_size=mtf_textSize, text_color=color.white, bgcolor=f_mtfBgColor(mtf_trend4))
+    table.cell(mtfTable, 4, 1, f_mtfLabel(mtf_trend5), text_size=mtf_textSize, text_color=color.white, bgcolor=f_mtfBgColor(mtf_trend5))
+    table.cell(mtfTable, 5, 1, f_mtfLabel(mtf_trend6), text_size=mtf_textSize, text_color=color.white, bgcolor=f_mtfBgColor(mtf_trend6))
+
+
+
+

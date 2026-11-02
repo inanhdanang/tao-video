@@ -1,0 +1,1 @@
+Trong mã hiện tại, S T một có chu kỳ A T R mười và hệ số sáu. S T hai có cùng chu kỳ nhưng hệ số bốn, vì thế thường phản ứng nhanh hơn. Đường xanh dương và cam thuộc S T một. Vùng xanh lá và đỏ thuộc S T hai. Nhãn mua bán của S T một mặc định đang tắt. Muốn xem nhãn này, hãy bật mục Show Buy Sell Signals trong nhóm Supertrend một.

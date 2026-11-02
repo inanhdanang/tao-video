@@ -1,0 +1,1 @@
+Trước mỗi quyết định, hãy kiểm tra theo cùng một thứ tự. H V I báo gì? S T hai đã có nhãn cùng hướng hay chưa? S T một đang ở trạng thái nào, và giá nằm ở đâu so với vùng biên? Có đang dùng ngoại lệ Fibonacci hoặc chờ hồi không? Cuối cùng, xác định điểm vào, điểm sai và mức rủi ro. Nếu không giải thích được lệnh thuộc tình huống nào, hãy bỏ qua và tiếp tục quan sát.

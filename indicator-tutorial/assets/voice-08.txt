@@ -1,0 +1,1 @@
+Ở tình huống một của ảnh ba, H V I báo bán, S T hai cũng bán nhưng S T một vẫn đang mua. Theo cách đọc bạn mô tả, hướng ưu tiên chuyển sang mua. Điểm quan trọng là tín hiệu ngắn hạn đang đối nghịch với vùng xu hướng S T một. Đây là một quy tắc diễn giải của bạn, không phải nhãn đảo chiều mua được hai file mã tự động sinh ra.

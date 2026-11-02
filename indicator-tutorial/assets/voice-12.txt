@@ -1,0 +1,1 @@
+Ảnh bốn nhấn mạnh thời điểm vào lệnh. Khi S T một và S T hai cùng xuất hiện bán, bạn không vào ngay mà chờ tín hiệu bán tiếp theo ở S T hai. Sau đó, nếu giá hồi về mức giá của cây nến tín hiệu, bạn xét bán theo quy tắc đã mô tả. Hãy tách ba thời điểm: hình thành bối cảnh, xuất hiện tín hiệu sau, rồi giá quay lại mức tham chiếu.

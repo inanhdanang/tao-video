@@ -1,0 +1,204 @@
+//@version=4
+// HVI_LB (LazyBear) + RSI Histogram (dman103) - gộp thành 1 indicator
+// Giữ nguyên logic gốc của cả 2. Volume chỉ co theo tỉ lệ tuyến tính để xếp chồng trong 1 pane.
+study("HVI + RSI Histogram", shorttitle="HVI_RSI", overlay=false)
+
+// ================== INPUTS ==================
+// --- HVI ---
+hvi_len   = input(200, "HVI Length", group="HVI")
+divisor   = input(1.5, "HVI Divisor", group="HVI")
+vol_ref    = input(0.0, "Volume tham chiếu = chiều cao đầy (0 = tự động theo max volume)", minval=0.0, group="HVI")
+vol_height = input(200, "Chiều cao vùng Volume (RSI = 200)", group="HVI")
+vol_base   = input(110, "Đáy của biểu đồ Volume (vị trí)", group="HVI")
+
+// --- Đánh dấu tín hiệu trên HVI ---
+sig_on      = input(true, "Bật đánh dấu Buy/Sell trên HVI", group="Signal")
+sig_once    = input(false, "Chỉ 1 tín hiệu cho mỗi chu kỳ RSI His", group="Signal")
+sig_offset  = input(15, "Khoảng cách icon so với đỉnh thanh HVI", group="Signal")
+
+// --- QQE Mod (chỉ dùng để lọc tín hiệu, không vẽ lên chart; thông số mặc định) ---
+qq_len    = input(6, "QQE RSI Length", group="QQE Mod (ẩn)")
+qq_smooth = input(5, "QQE RSI Smoothing", group="QQE Mod (ẩn)")
+qq_factor = input(3.0, "QQE Factor", group="QQE Mod (ẩn)")
+bb_len    = input(50, "QQE Bollinger Length", minval=1, group="QQE Mod (ẩn)")
+bb_mult   = input(0.35, "QQE Bollinger Multiplier", step=0.1, minval=0.001, group="QQE Mod (ẩn)")
+qs_len    = input(6, "QQE Secondary RSI Length", group="QQE Mod (ẩn)")
+qs_smooth = input(5, "QQE Secondary RSI Smoothing", group="QQE Mod (ẩn)")
+qs_thr    = input(3.0, "QQE Secondary Threshold", group="QQE Mod (ẩn)")
+
+// --- RSI Histogram ---
+length      = input(7, "RSI Length", group="RSI")
+ma_length   = input(4, "Moving Average Length", group="RSI")
+source      = input(hl2, "Source", group="RSI")
+ma_select   = input(title="Moving Average Type", defval="KAMA", options=["NONE","SMA","EMA","WMA","HMA","JMA","KAMA"], group="RSI")
+color_bars  = input(false, "Color bars", group="RSI")
+i_fastAlpha = input(3, "KAMA's alpha (only for KAMA)", minval=0, step=0.5, group="RSI")
+
+// ================== HVI_LB ==================
+rangeVal = high - low
+rangeAvg = sma(rangeVal, hvi_len)
+volumeA  = sma(volume, hvi_len)
+
+high1 = high[1]
+low1  = low[1]
+mid1  = hl2[1]
+
+u1 = mid1 + (high1 - low1) / divisor
+d1 = mid1 - (high1 - low1) / divisor
+
+r_enabled1 = (rangeVal > rangeAvg) and (close < d1) and volume > volumeA
+r_enabled2 = close < mid1
+r_enabled  = r_enabled1 or r_enabled2
+
+g_enabled1 = close > mid1
+g_enabled2 = (rangeVal > rangeAvg) and (close > u1) and (volume > volumeA)
+g_enabled3 = (high > high1) and (rangeVal < rangeAvg/1.5) and (volume < volumeA)
+g_enabled4 = (low < low1) and (rangeVal < rangeAvg/1.5) and (volume > volumeA)
+g_enabled  = g_enabled1 or g_enabled2 or g_enabled3 or g_enabled4
+
+gr_enabled1 = (rangeVal > rangeAvg) and (close > d1) and (close < u1) and (volume > volumeA) and (volume < volumeA*1.5) and (volume > volume[1])
+gr_enabled2 = (rangeVal < rangeAvg/1.5) and (volume < volumeA/1.5)
+gr_enabled3 = (close > d1) and (close < u1)
+gr_enabled  = gr_enabled1 or gr_enabled2 or gr_enabled3
+
+// Xám (mờ 80%) | Cam | Đỏ | Xanh dương (mờ 65%)
+v_color = gr_enabled ? color.new(color.gray, 80) : g_enabled ? color.orange : r_enabled ? color.red : color.new(color.blue, 65)
+
+// Co volume theo tỉ lệ tuyến tính (không đổi hình dạng)
+vmax    = highest(volume, hvi_len)
+vref    = vol_ref > 0 ? vol_ref : vmax
+vfactor = vref > 0 ? vol_height / vref : 0.0
+vol_plot = vol_base + nz(volume) * vfactor
+
+// ================== RSI HISTOGRAM ==================
+rsi_val = min(100, max(-100, (rsi(source, length) - 50) * 4))
+
+fastAlpha = 2.0 / (i_fastAlpha + 1)
+slowAlpha = 2.0 / (31)
+
+MA_selector(src, length) =>
+    ma = 0.0
+    if ma_select == "NONE"
+        ma := src
+        ma
+    if ma_select == "SMA"
+        ma := sma(src, length)
+        ma
+    if ma_select == "EMA"
+        ma := ema(src, length)
+        ma
+    if ma_select == "WMA"
+        ma := wma(src, length)
+        ma
+    if ma_select == "HMA"
+        ma := hma(src, length)
+        ma
+    if ma_select == "JMA"
+        beta = 0.45*(length-1)/(0.45*(length-1)+2)
+        alpha = beta
+        tmp0 = 0.0, tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0
+        tmp0 := (1-alpha)*src + alpha*nz(tmp0[1])
+        tmp1 := (src - tmp0[0])*(1-beta) + beta*nz(tmp1[1])
+        tmp2 := tmp0[0] + tmp1[0]
+        tmp3 := (tmp2[0] - nz(tmp4[1]))*((1-alpha)*(1-alpha)) + (alpha*alpha)*nz(tmp3[1])
+        tmp4 := nz(tmp4[1]) + tmp3[0]
+        ma := tmp4
+        ma
+    if ma_select == "KAMA"
+        momentum = abs(change(src, length))
+        volatility = sum(abs(change(src)), length)
+        efficiencyRatio = volatility != 0 ? momentum / volatility : 0
+        smoothingConstant = pow((efficiencyRatio * (fastAlpha - slowAlpha)) + slowAlpha, 2)
+        var kama = 0.0
+        kama := nz(kama[1], src) + smoothingConstant * (src - nz(kama[1], src))
+        ma := kama
+        ma
+    ma
+
+var plot_color = #353535
+val = MA_selector(rsi_val, ma_length)
+
+if val > 0
+    plot_color := color.lime
+else if val < 0
+    plot_color := color.red
+
+// ================== QQE MOD (ẩn, chỉ để lọc) ==================
+qqe_calc(rsiLen, smoothing, factor, src) =>
+    wilders = rsiLen * 2 - 1
+    r       = rsi(src, rsiLen)
+    sr      = ema(r, smoothing)
+    atrR    = abs(sr[1] - sr)
+    satr    = ema(atrR, wilders)
+    dyn     = satr * factor
+    longB   = 0.0
+    shortB  = 0.0
+    trend   = 0
+    newShort = sr + dyn
+    newLong  = sr - dyn
+    longB  := sr[1] > longB[1] and sr > longB[1] ? max(longB[1], newLong) : newLong
+    shortB := sr[1] < shortB[1] and sr < shortB[1] ? min(shortB[1], newShort) : newShort
+    if cross(sr, shortB[1])
+        trend := 1
+    else if cross(longB[1], sr)
+        trend := -1
+    else
+        trend := nz(trend[1])
+    line = trend == 1 ? longB : shortB
+    [line, sr]
+
+[qqeLine, qqeRsi] = qqe_calc(qq_len, qq_smooth, qq_factor, close)
+
+bbBasis = sma(qqeLine - 50, bb_len)
+bbDev   = bb_mult * stdev(qqeLine - 50, bb_len)
+qqeSec  = ema(rsi(close, qs_len), qs_smooth) - 50   // Secondary RSI (cột histogram của QQE Mod)
+// Đúng như QQE Mod gốc: cột xanh/đỏ chỉ hiện khi CẢ Secondary vượt ngưỡng VÀ Primary vượt Bollinger
+qqeBlue = qqeSec > qs_thr  and (qqeRsi - 50) > bbBasis + bbDev   // QQE Mod xanh
+qqeRed  = qqeSec < -qs_thr and (qqeRsi - 50) < bbBasis - bbDev   // QQE Mod đỏ
+// Các trường hợp còn lại (xám hoặc không có cột) = không cho tín hiệu
+
+// ================== TÍN HIỆU TRÊN HVI ==================
+// Phân loại thanh HVI theo đúng thứ tự ưu tiên màu của v_color
+isGray   = gr_enabled
+isGreen  = not gr_enabled and g_enabled                       // thanh "xanh" (màu cam)
+isRed    = not gr_enabled and not g_enabled and r_enabled     // thanh đỏ
+
+rsiDir   = 0
+rsiDir   := val > 0 ? 1 : val < 0 ? -1 : nz(rsiDir[1], 0)
+newCycle = rsiDir != nz(rsiDir[1], 0)
+
+var bool cycleDone = false
+cycleDone := newCycle ? false : cycleDone
+
+// BUY : HVI đỏ (nến trước) -> HVI xám (nến hiện tại), cả 2 nến RSI His xanh + QQE xanh
+buyPat  = isGray and isRed[1]   and rsiDir > 0 and rsiDir[1] > 0 and qqeBlue and qqeBlue[1]
+// SELL: HVI xanh (nến trước) -> HVI xám (nến hiện tại), cả 2 nến RSI His đỏ + QQE đỏ
+sellPat = isGray and isGreen[1] and rsiDir < 0 and rsiDir[1] < 0 and qqeRed  and qqeRed[1]
+
+buySig  = sig_on and buyPat  and not (sig_once and cycleDone)
+sellSig = sig_on and sellPat and not (sig_once and cycleDone)
+if buySig or sellSig
+    cycleDone := true
+
+// ================== PLOTS ==================
+// RSI Histogram (thang -100..100)
+plot(val, title="RSI Histogram", color=plot_color, style=plot.style_columns)
+hline(0, "RSI 0", color=color.new(color.gray, 60))
+
+// HVI (đáy tại vol_base)
+plot(vol_plot, title="HVI Volume", style=plot.style_histogram, histbase=vol_base, color=v_color, linewidth=5)
+hline(vol_base, "HVI base", color=color.new(color.gray, 60))
+
+// Giá trị gốc để tra cứu trong Data Window (ẩn khỏi biểu đồ)
+plot(volume, title="Volume gốc", display=display.none)
+plot(val, title="RSI giá trị gốc", display=display.none)
+sig = val > 0 ? 1 : -1
+plot(sig, display=display.none, title="Signal 1 or -1")
+
+// Đánh dấu trên HVI
+plotshape(sellSig ? vol_plot + sig_offset : na, title="HVI Sell", style=shape.triangledown, location=location.absolute, color=color.red, size=size.small, text="Sell", textcolor=color.red)
+plotshape(buySig ? vol_plot + sig_offset : na, title="HVI Buy", style=shape.triangleup, location=location.absolute, color=color.lime, size=size.small, text="Buy", textcolor=color.lime)
+alertcondition(sellSig, "HVI Sell", "HVI + RSI His: tín hiệu SELL")
+alertcondition(buySig, "HVI Buy", "HVI + RSI His: tín hiệu BUY")
+
+barcolor(color_bars ? plot_color : na)
